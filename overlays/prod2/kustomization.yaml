@@ -4,29 +4,35 @@ kind: Kustomization
 # =============================================================================
 # BASE
 # =============================================================================
-helmGlobals:
-  chartHome: ../../base/charts
-
-helmCharts:
-  - name: mychart
-    releaseName: mychart
-    # Local values override
-    valuesFile: values-prod.yaml
-    # Inline values override
-    valuesInline:
-      replicaCount: 5
-
-# =============================================================================
-# ADDITIONAL RESOURCES (a nested Kustomization renders its own local Helm chart)
-# =============================================================================
 resources:
+  - ../../base
+
+# =============================================================================
+# ADDITIONAL RESOURCES
+# =============================================================================
   - configmap.yaml
-  - extra-chart 
+  - extra-chart
 
 # =============================================================================
 # PATCHES
 # =============================================================================
 patches:
+  - target:
+      kind: Deployment
+      name: mychart
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 5
+
+  - target:
+      kind: Service
+      name: mychart
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: LoadBalancer
+
   - target:
       kind: Service
       name: mychart
@@ -34,4 +40,3 @@ patches:
       - op: replace
         path: /spec/ports/0/targetPort
         value: 8080
-        
