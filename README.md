@@ -4,13 +4,22 @@ The local Helm chart lives in `base/charts/mychart`. The common values are in `b
 Each environment defines its own `helmCharts` entry and adds a values file with `additionalValuesFiles`.
 This is intentional: Kustomize overlays cannot patch the `helmCharts` generator configuration inherited from a base.
 
-Build:
+## Build
+
+From this project's root:
 
 ```sh
 kustomize build overlays/prod --enable-helm --load-restrictor LoadRestrictionsNone
 ```
-
-Requirements: Kustomize with Helm support, and Helm installed on PATH.
 For Argo CD, configure `kustomize.buildOptions: --enable-helm` in argocd-cm and ensure Helm is available in repo-server.
 
-Expected result: dev uses one replica and nginx:1.27-alpine; prod uses three replicas and a LoadBalancer Service.
+`LoadRestrictionsNone` may be needed for the main chart path outside the overlay,
+depending on the Kustomize version. For Argo CD, configure the equivalent build
+options and ensure the repo-server has Helm installed.
+
+
+## Folders
+
+- **dev**: Basic Kustomize overlay extending the base configuration.
+- **prod**: Helm chart with environment-specific values and Kustomize patches.
+- **prod2**: Multiple Helm charts, including an additional chart for custom resources, with environment-specific values and Kustomize patches.

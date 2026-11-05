@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mail-contacts
+data:
+  mail-default-from: "ACME Support <noreply@acme.org>"
+  mail-customer-support-to: "support@acme.org"
